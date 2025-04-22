@@ -126,10 +126,17 @@ app.post('/message', (req, res) => {
     // Write to log file and console
     logMessage(logEntry);
     
-    // Send response
+    // Extract the toolCallId from the request or use default
+    const toolCallId = req.body.toolCallId || "toolu_ThisIsSomeRandomToolIDForVapi";
+    
+    // Send Vapi-formatted response
     res.status(200).json({ 
-      status: 'success', 
-      message: 'Message received and logged' 
+      results: [
+        {
+          toolCallId: toolCallId,
+          result: "Your message was received successfully."
+        }
+      ]
     });
   } catch (error) {
     console.error('Error processing message:', error);
@@ -139,9 +146,17 @@ app.post('/message', (req, res) => {
     messageStore.addMessage(errorMsg);
     logMessage(errorMsg);
     
+    // Extract the toolCallId from the request or use default
+    const toolCallId = req.body.toolCallId || "toolu_ThisIsSomeRandomToolIDForVapi";
+    
+    // Send Vapi-formatted error response
     res.status(500).json({ 
-      status: 'error', 
-      message: 'Failed to process message' 
+      results: [
+        {
+          toolCallId: toolCallId,
+          result: "Failed to process message: " + sanitizeInput(error.message)
+        }
+      ]
     });
   }
 });
