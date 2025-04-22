@@ -1,15 +1,10 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import fs from 'fs';
-import path from 'path';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import { fileURLToPath } from 'url';
-import basicAuth from 'express-basic-auth';
-
-// Handle both ESM and CommonJS environments
-const __filename = typeof __filename !== 'undefined' ? __filename : fileURLToPath(import.meta.url);
-const __dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(__filename);
+const express = require('express');
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const path = require('path');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const basicAuth = require('express-basic-auth');
 
 // Create Express app
 const app = express();
@@ -306,13 +301,10 @@ app.use((req, res) => {
   res.status(404).json({ status: 'error', message: 'Route not found' });
 });
 
-// Start the server if not imported as a module
-if (import.meta.url === `file://${__filename}`) {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    logMessage('Server started');
-  });
-}
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  logMessage('Server started');
+});
 
-// Export for use with Vite or other modules
-export default app;
+module.exports = app;

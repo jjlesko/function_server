@@ -1,11 +1,11 @@
 name: function-server
 services:
 - name: api
+  environment_slug: node
   github:
     branch: main
     deploy_on_push: true
     repo: jjlesko/function_server
-  build_command: npm run build
   run_command: npm start
   envs:
   - key: NODE_ENV
