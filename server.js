@@ -1,9 +1,15 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
-const helmet = require('helmet');
-const morgan = require('morgan');
+// server.js (updated for compatibility with both direct Node.js and Vite)
+import express from 'express';
+import bodyParser from 'body-parser';
+import fs from 'fs';
+import path from 'path';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import { fileURLToPath } from 'url';
+
+// Handle both ESM and CommonJS environments
+const __filename = typeof __filename !== 'undefined' ? __filename : fileURLToPath(import.meta.url);
+const __dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(__filename);
 
 // Create Express app
 const app = express();
@@ -12,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 // Set up logging directory
 const logsDir = path.join(__dirname, 'logs');
 if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir);
+  fs.mkdirSync(logsDir, { recursive: true });
 }
 
 // Create a custom logging stream for Morgan
@@ -105,15 +111,13 @@ app.use((req, res) => {
   res.status(404).json({ status: 'error', message: 'Route not found' });
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  
-  // Ensure logs directory exists
-  if (!fs.existsSync(logsDir)) {
-    fs.mkdirSync(logsDir, { recursive: true });
-  }
-  
-  // Log server start
-  logMessage('Server started');
-});
+// Start the server if not imported as a module
+if (import.meta.url === `file://${__filename}`) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    logMessage('Server started');
+  });
+}
+
+// Export for use with Vite or other modules
+export default app;
